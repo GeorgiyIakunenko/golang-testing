@@ -115,3 +115,16 @@ func (suite *TokenServiceTestSuite) TestTokenService_ValidateAccessToken() {
 		})
 	}
 }
+
+func BenchmarkTokenService_GenerateAccessToken(b *testing.B) {
+	cfg := &config.Config{
+		AccessSecret:          "a_s",
+		AccessLifetimeMinutes: 1,
+	}
+
+	tokenService := NewTokenService(cfg)
+
+	for i := 0; i < b.N; i++ {
+		_, _ = tokenService.GenerateAccessToken(userID)
+	}
+}
