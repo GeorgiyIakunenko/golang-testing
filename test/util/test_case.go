@@ -45,3 +45,13 @@ func PrepareHandlerTestCase(test TestCaseHandler) (request *http.Request, record
 
 	return request, httptest.NewRecorder()
 }
+
+func PrepareApiTestCase(test TestCaseHandler, url string) *http.Request {
+	request, _ := http.NewRequest(test.Request.Method, url+test.Request.Url, nil)
+
+	if test.Request.AuthToken != "" {
+		request.Header.Set("Authorization", "Bearer "+test.Request.AuthToken)
+	}
+
+	return request
+}

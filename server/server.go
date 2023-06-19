@@ -5,6 +5,7 @@ import (
 	"auth/repository"
 	"auth/server/handler"
 	"auth/service"
+	"fmt"
 	"log"
 	"net/http"
 )
@@ -17,8 +18,10 @@ func Start(cfg *config.Config) {
 	authHandler := handler.NewAuthHandler(cfg)
 	userHandler := handler.NewUserHandler(userRepo, tokenService)
 
-	http.HandleFunc("/login", authHandler.Login)
-	http.HandleFunc("/profile", userHandler.GetProfile)
+	mux := http.NewServeMux()
+	mux.HandleFunc("/login", authHandler.Login)
+	mux.HandleFunc("/profile", userHandler.GetProfile)
 
+	fmt.Printf("server is running")
 	log.Fatal(http.ListenAndServe(cfg.Port, nil))
 }
