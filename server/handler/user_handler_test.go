@@ -54,6 +54,19 @@ func (suite *UserHandlerTestSuite) TestWalkUserHandlerGetProfile() {
 				BodyPart:   "test-1@example.com",
 			},
 		},
+		{
+			TestName: "Unauthorized getting user profile",
+			Request: util.Request{
+				Method:    http.MethodGet,
+				Url:       "/profile",
+				AuthToken: "",
+			},
+			HandlerFunc: handlerFunc,
+			Want: util.ExpectedResponse{
+				StatusCode: 401,
+				BodyPart:   "Invalid",
+			},
+		},
 	}
 
 	for _, test := range cases {
@@ -62,7 +75,11 @@ func (suite *UserHandlerTestSuite) TestWalkUserHandlerGetProfile() {
 			test.HandlerFunc(recorder, request)
 
 			assert.Contains(t, recorder.Body.String(), test.Want.BodyPart)
-			assert.Equal(t, recorder.Code, test.Want.StatusCode)
+			if assert.Equal(t, recorder.Code, test.Want.StatusCode) {
+				if recorder.Code == http.StatusOK {
+					util.AssertUserProfileResponse(t, recorder)
+				}
+			}
 		})
 	}
 }
